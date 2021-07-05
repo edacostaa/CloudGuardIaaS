@@ -239,6 +239,18 @@ resource "azurerm_lb_probe" "azure_lb_healprob" {
   number_of_probes = var.lb_probe_unhealthy_threshold
 }
 
+resource "azurerm_lb_rule" "backend-lb-rule" {
+  protocol = "All"
+  backend_port = 0
+  frontend_ip_configuration_name = azurerm_lb.backend-lb.frontend_ip_configuration.0.name
+  frontend_port = 0
+  loadbalancer_id = azurerm_lb.backend-lb.id
+  name = "lb_haports_rule"  
+  backend_address_pool_id = azurerm_lb_backend_address_pool.backend-lb-pool.id
+  probe_id = azurerm_lb_probe.azure_lb_healprob.1.id
+  resource_group_name  = module.common.resource_group_name
+}
+
 //********************** Availability Set **************************//
 locals {
   availability_set_condition = var.availability_type == "Availability Set" ? true : false
